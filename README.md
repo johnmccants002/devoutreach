@@ -15,13 +15,60 @@ The purpose of this project is to streamline the process of reaching out to comp
 ## Upcoming Features
 
 - **Authentication Login**: Implement user authentication to manage personal templates and settings.
+- **Edit Email Generation Prompt**: Allow users to customize the prompt used to generate email templates.
+- **Scrape Contact Emails**: Extract contact emails from company websites.
+- **Save and Paginate Templates**: Save generated templates and enable pagination through saved templates.
+- **UI Improvements**: Update the UI for a cleaner and more user-friendly experience.
 
 ## Installation
 
 To run this project locally, follow these steps:
 
 1. Clone the repository:
+
    ```sh
    git clone https://github.com/johnmccants002/devoutreach.git
    cd devoutreach
    ```
+
+2. Install the dependencies:
+
+```
+npm install
+```
+
+3. Start the application:
+
+```
+npm start
+```
+
+## Contributing
+
+Contributions are welcome! To contribute:
+
+1. Fork the repository.
+2. Create a new branch:
+
+   ```sh
+   git checkout -b feature-name
+
+   ```
+
+3. Make your changes and commit them:
+
+```sh
+git commit -m 'Add new feature'
+```
+
+4. Push to the branch:
+
+```sh
+git push origin feature-name
+```
+
+5. Create a pull request.
+
+## Contact Me
+
+My email is johnmccants002@gmail.com
