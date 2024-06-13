@@ -45,11 +45,11 @@
   align-items: center;
   margin-bottom: 10px;
 }
-
+/* 
 .email-subject p,
 .email-body p {
   flex: 1;
-}
+} */
 
 .email-template pre {
   white-space: pre-wrap;
@@ -64,38 +64,18 @@
 .email-template {
   position: fixed;
   right: 20px; /* Adjust as needed */
-  top: 160px; /* Adjust as needed */
+  top: 100px; /* Adjust as needed */
   width: 40%;
   background: white;
   padding: 10px;
   border: 1px solid #ccc;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   z-index: 1000;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap; /* Ensures that whitespace is respected, useful for the pre tag */
+  overflow: auto;
 }
-
-/*
-
-.results-table-container {
-  flex: 1;
-  margin-right: 380px; 
-  overflow-y: auto;
-  height: calc(100vh - 40px); 
-  background-color: #f8f9fa; 
-
-}
-
-.results-table {
-  width: 60%;
-}
-
-.results-table thead {
-  position: sticky;
-  top: 0;
-  background: white;
-  z-index: 10;
-}
-
-*/
 
 .results-table-container {
   display: flex;
@@ -105,7 +85,7 @@
   height: calc(100vh - 40px); /* Adjust based on the container padding */
   padding: 20px;
   background-color: #f8f9fa; /* Light background similar to Indeed */
-  width: 55%;
+  width: 50%;
 }
 
 .result-card {
@@ -128,6 +108,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
+  justify-content: center;
 }
 
 .card-header h3 {
@@ -171,4 +152,72 @@
   font-size: 24px;
   font-weight: bold;
   color: #007bff;
+}
+
+.text-input {
+  width: 100%;
+  height: 100px;
+  resize: none;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Media query for smaller screens */
+@media (max-width: 1280px) {
+  .email-subject,
+  .email-body {
+    font-size: 8px; /* Adjust the font size for smaller screens */
+  }
+
+  .email-subject strong,
+  .email-body strong {
+    font-size: 10px; /* Adjust the font size for strong tags in smaller screens */
+  }
+
+  .email-template {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 4px;
+  }
+
+  .results-table-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: auto;
+    height: calc(100vh - 40px); /* Adjust based on the container padding */
+    padding: 20px;
+    background-color: #f8f9fa; /* Light background similar to Indeed */
+    width: 40%;
+  }
+
+  .button-container {
+    display: flex;
+    gap: 12px;
+    justify-content: space-evenly;
+  }
+}
+
+@media (max-width: 480px) {
+  .email-template {
+    width: 90%; /* Adjust the width for even smaller screens */
+    right: 5px; /* Adjust right position for even smaller screens */
+    top: 20px; /* Adjust top position for even smaller screens */
+    padding: 5px; /* Adjust padding for even smaller screens */
+  }
+
+  .email-subject,
+  .email-body {
+    font-size: 12px; /* Adjust the font size for even smaller screens */
+  }
+
+  .email-subject strong,
+  .email-body strong {
+    font-size: 14px; /* Adjust the font size for strong tags in even smaller screens */
+  }
 }

@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { fetchLocalResults } from "../services/serpApiService";
-import { generateEmailTemplate } from "../services/emailService";
+import {
+  generateEmailTemplate,
+  updateEmailTemplate,
+  customEmailTemplate,
+} from "../services/emailService";
 import { replaceCompanyPlaceholder } from "../utils/emailTemplateHelper";
 import "./LocalResults.css"; // Assuming you will add styles in this CSS file
 import SearchBar from "./SearchBar";
@@ -15,9 +19,12 @@ const LocalResults = () => {
     subject: "",
     body: "",
   });
+  const [savedTemplates, setSavedTemplates] = useState([]);
+
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [tempLoading, setTempLoading] = useState(false);
+  const [inputValue, setInputValue] = useState("");
 
   const height = window.innerHeight;
 
@@ -38,19 +45,52 @@ const LocalResults = () => {
   };
 
   const handleGenerateEmails = async () => {
-    if (results.length === 0) return;
-    const company = results[0]; // Assuming you want to generate email for the first company in the list
+    // Assuming you want to generate email for the first company in the list
+    console.log("GENERATING EMAILS");
     try {
-      const template = await generateEmailTemplate(user, company);
+      const template = await generateEmailTemplate(user);
       console.log(JSON.stringify(template));
 
-      console.log(template.body, "THIS IS THE TEMPLATE BODY");
-      const newTemp = JSON.parse(template.body);
-      setEmailTemplate(newTemp);
-      setCurrentTemplate(newTemp);
+      console.log(template, "THIS IS THE TEMPLATE BODY");
+
+      setEmailTemplate(template);
+      setCurrentTemplate(template);
     } catch (error) {
       console.log("ERROR GENERATING EMAIL: ", error);
     }
+  };
+
+  const handleTransformation = async (transformation) => {
+    try {
+      const updatedTemplate = await updateEmailTemplate(
+        emailTemplate,
+        transformation
+      );
+      console.log(updatedTemplate);
+      setEmailTemplate(updatedTemplate);
+      setCurrentTemplate(updatedTemplate);
+    } catch (error) {
+      console.error("Error updating email template:", error);
+    }
+  };
+
+  const handleCustomTemplate = async (prompt, template) => {
+    const userString = JSON.stringify(user);
+    try {
+      const updatedTemplate = await customEmailTemplate(
+        prompt,
+        template,
+        userString
+      );
+      setEmailTemplate(updatedTemplate);
+      setCurrentTemplate(updatedTemplate);
+    } catch (error) {
+      console.log("ERROR CUSTOM TEMPLATE", error);
+    }
+  };
+
+  const handleInputChange = (event) => {
+    setInputValue(event.target.value);
   };
 
   const handleUpdateTemplate = (companyName) => {
@@ -70,54 +110,68 @@ const LocalResults = () => {
     setLoading(false);
   };
 
-  useEffect(() => {
-    // const getData = async () => {
-    //   try {
-    //     const data = await fetchLocalResults();
-    //     setResults(data);
-    //   } catch (e) {
-    //     console.log("ERROR GETTING DATA: ", e);
-    //   }
-    // };
-    // getData();
-  }, []);
-
   return (
     <div className="container" style={{ height: height }}>
       <SearchBar onSearch={handleSearch} query={query} setQuery={setQuery} />
-      <div className="container-two" style={{ height: height }}>
+      <div className="container-two">
         {emailTemplate.subject ? (
-          <div className="email-template" style={{ height: height * 0.7 }}>
-            <h2>Generated Email</h2>
-            <div className="email-subject">
-              <p>
-                <strong>Subject:</strong> {currentTemplate.subject}
-              </p>
-              <button
-                className="copy-button"
-                onClick={() =>
-                  navigator.clipboard.writeText(currentTemplate.subject)
-                }
-              >
-                Copy Subject
+          <div className="email-template">
+            <div>
+              <div className="email-subject">
+                <p>
+                  <strong>Subject:</strong> {currentTemplate.subject}
+                </p>
+                <button
+                  className="copy-button"
+                  onClick={() =>
+                    navigator.clipboard.writeText(currentTemplate.subject)
+                  }
+                >
+                  Copy Subject
+                </button>
+              </div>
+              <div className="email-body">
+                <p>
+                  <strong>Body:</strong>
+                  <pre>{currentTemplate.body.replace(/\\n/g, "\n")}</pre>
+                </p>
+                <button
+                  className="copy-button"
+                  onClick={() =>
+                    navigator.clipboard.writeText(
+                      currentTemplate.body.replace(/\\n/g, "\n")
+                    )
+                  }
+                >
+                  Copy Body
+                </button>
+              </div>
+            </div>
+            <div className="button-container">
+              <button onClick={() => handleTransformation("sales-y")}>
+                Make more sales-y
+              </button>
+              <button onClick={() => handleTransformation("shorter")}>
+                Make shorter
+              </button>
+              <button onClick={() => handleTransformation("layman")}>
+                Put in layman's terms
               </button>
             </div>
-            <div className="email-body">
-              <p>
-                <strong>Body:</strong>
-                <pre>{currentTemplate.body.replace(/\\n/g, "\n")}</pre>
-              </p>
-              <button
-                className="copy-button"
-                onClick={() =>
-                  navigator.clipboard.writeText(
-                    currentTemplate.body.replace(/\\n/g, "\n")
-                  )
-                }
-              >
-                Copy Body
-              </button>
+            <div>
+              <button>Save Template</button>
             </div>
+            <textarea
+              className="text-input"
+              value={inputValue}
+              onChange={handleInputChange}
+              placeholder="Type your message here..."
+            />
+            <button
+              onClick={() => handleCustomTemplate(inputValue, emailTemplate)}
+            >
+              Create Custom Email Template
+            </button>
           </div>
         ) : (
           <div className="email-template">
@@ -126,6 +180,17 @@ const LocalResults = () => {
               onClick={handleGenerateEmails}
             >
               Generate Email Template
+            </button>
+            <textarea
+              className="text-input"
+              value={inputValue}
+              onChange={handleInputChange}
+              placeholder="Type your message here..."
+            />
+            <button
+              onClick={() => handleCustomTemplate(inputValue, emailTemplate)}
+            >
+              Create Custom Email Template
             </button>
           </div>
         )}
@@ -142,10 +207,6 @@ const LocalResults = () => {
                 >
                   <div className="card-header">
                     <h3>{result.title}</h3>
-                    <div className="card-tags">
-                      <span className="tag">Full-time</span>
-                      <span className="tag">Monday to Friday</span>
-                    </div>
                   </div>
                   <div className="card-body">
                     <p>
